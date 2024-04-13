@@ -1,0 +1,59 @@
+[
+  {
+    "path": "/management",
+    "method": "POST",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/check-in-out",
+    "method": "POST",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/check-in-out",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave",
+    "method": "POST",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave",
+    "method": "PUT",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave",
+    "method": "DELETE",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/number-leave",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave-all",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/time-late",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/time-soon",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave-plan",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave-real",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave-by-type",
+    "method": "GET",
+    "rabbit": "rpc"
+  }
+]

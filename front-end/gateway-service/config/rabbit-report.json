@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/report",
+    "method": "GET",
+    "rabbit": "rpc"
+  },
+  {
+    "path": "/report/money",
+    "method": "GET",
+    "rabbit": "rpc"
+  },
+  {
+    "path": "/report/chart",
+    "method": "GET",
+    "rabbit": "rpc"
+  },
+  {
+    "path": "/report/line",
+    "method": "GET",
+    "rabbit": "rpc"
+  }
+]

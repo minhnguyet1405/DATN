@@ -1,0 +1,7 @@
+[
+  {
+    "path": "/socket/send-email",
+    "method": "POST",
+    "rabbit": "rpc"
+  }
+]

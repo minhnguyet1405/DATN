@@ -43,6 +43,7 @@
             class="btn-check"
             type="primary"
             :loading="loading"
+            :disabled="disableBtn"
             @click="getList()"
           >
             Hiển thị dữ liệu
@@ -61,13 +62,13 @@
           <template slot-scope="scope"><span>{{ getNameUser(scope.row.createdBy) }}</span></template>
         </el-table-column>
         <el-table-column label="Từ ngày">
-          <template slot-scope="scope"><span>{{ formatDate(scope.row.startTime) }}</span></template>
+          <template slot-scope="scope"><span>{{ formatDateTime(scope.row.startTime) }}</span></template>
         </el-table-column>
         <el-table-column label="Đến ngày">
-          <template slot-scope="scope"><span>{{ formatTime(scope.row.endTime) }}</span></template>
+          <template slot-scope="scope"><span>{{ formatDateTime(scope.row.endTime) }}</span></template>
         </el-table-column>
         <el-table-column label="Trạng thái">
-          <template slot-scope="scope"><span>{{ scope.row.status }}</span></template>
+          <template slot-scope="scope"><span>{{ getStatusName(scope.row.type) }}</span></template>
         </el-table-column>
         <el-table-column label="Lý do">
           <template slot-scope="scope"><span>{{ scope.row.reason }}</span></template>
@@ -100,6 +101,7 @@ export default {
   },
   data() {
     return {
+      disableBtn: true,
       loading: false,
       loading_checkin: false,
       filter: {
@@ -107,6 +109,11 @@ export default {
         userId: null,
         date: [moment().subtract(1, 'month'), moment().add(1, 'month')]
       },
+      leaveStatus: [
+        { value: 'LEAVE', label: 'Nghỉ phép' },
+        { value: 'SICK', label: 'Nghỉ ốm' },
+        { value: 'ABSENT', label: 'Vắng mặt' }
+      ],
       leaveList: [],
       departmentList: [],
       userList: [],
@@ -118,7 +125,6 @@ export default {
     }
   },
   created() {
-    this.getList()
     this.getDepartment()
     this.getUser()
   },
@@ -130,12 +136,12 @@ export default {
         Authorization: 'Bearer ' + Cookies.get('access-token')
       }
       axios
-        .get(process.env.VUE_APP_API + 'management/leave', {
+        .get(process.env.VUE_APP_API + 'management/leave-all', {
           headers: headers,
           params: {
             page: this.queryPage.page > 0 ? this.queryPage.page - 1 : 0,
             size: this.queryPage.size,
-            userId: this.filter.userId,
+            userId: this.filter.userId !== null ? this.filter.userId : this.userList.map(i => i.uuid).join(),
             startTime: moment(this.filter.date[0]).format('YYYY-MM-DD HH:mm:ss'),
             endTime: moment(this.filter.date[1]).format('YYYY-MM-DD HH:mm:ss')
           }
@@ -156,8 +162,13 @@ export default {
           })
         })
     },
+    getStatusName(status) {
+      const result = this.leaveStatus.find(i => {
+        return i.value === status
+      })
+      return result?.label
+    },
     getDepartment() {
-      this.loading = true
       const headers = {
         'Content-Type': 'multipart/form-data',
         Authorization: 'Bearer ' + Cookies.get('access-token')
@@ -178,7 +189,6 @@ export default {
         })
         .catch((err) => {
           console.log(err)
-          this.loading = false
           this.$message({
             message: err.response.data.message,
             type: 'error'
@@ -212,6 +222,7 @@ export default {
         })
     },
     getUserByDepartment() {
+      this.disableBtn = false
       this.filter.userId = null
       const headers = {
         'Content-Type': 'multipart/form-data',
@@ -256,11 +267,13 @@ export default {
       this.getList()
     },
     formatDate(val) {
-      console.log(' 🚀 ~ formatDate ~ ', moment(val).format('DD/MM/YYYY'))
       return moment(val).format('DD/MM/YYYY')
     },
     formatTime(val) {
       return val ? moment(val).format('HH:mm') : ''
+    },
+    formatDateTime(val) {
+      return moment(val).format('DD/MM/YYYY HH:mm')
     }
   }
 }

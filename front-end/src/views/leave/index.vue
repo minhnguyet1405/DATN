@@ -20,15 +20,15 @@
             :key="'patrolScheduleInd' + ind"
           >
             <div v-if="handleCheckDate(item.time, data.day)">
-              <div class="current">
+              <div class="current" @click="labelPatrolSchedule($event, item, data)">
                 <el-tooltip
-                  :content="getStatusName(item.status)"
+                  :content="getStatusName(item.type)"
                   placement="top-start"
                   class="box-item"
                   effect="dark"
                 >
                   <span class="current-content">
-                    {{ formattedTitle(getStatusName(item.status)) }} - {{ formatDate(item.startTime) }} - {{ formatDate(item.endTime) }}
+                    {{ formattedTitle(getStatusName(item.type)) }} - {{ formatDate(item.startTime) }} - {{ formatDate(item.endTime) }}
                   </span>
                 </el-tooltip>
               </div>
@@ -92,12 +92,10 @@ export default {
         .then((res) => {
           if (res.data) {
             this.leaveList = res.data.data
-            console.log(' 🚀 ~ .then ~ this.leaveList:', this.leaveList)
             this.loading = false
           }
         })
         .catch((err) => {
-          console.log(err)
           this.loading = false
           this.$message({
             message: err.response.data.message,
@@ -106,20 +104,20 @@ export default {
         })
     },
     handleClose() {
+      this.detailLeave = null
       this.dialogVisible = false
     },
     handleSuccess() {
+      this.detailLeave = null
       this.dialogVisible = false
       this.getList()
     },
     handleCreate(data) {
       if (data) {
-        console.log('data', data)
         const dateSelect = moment(data.day).unix()
         const dateNow = moment().clone().format('YYYY-MM-DD 00:00:00')
         const dateCurrent = moment(dateNow).unix()
         if (dateSelect >= dateCurrent) {
-          this.detailLeave = data
           this.dialogVisible = true
         } else {
           this.$message.warning('Không thể thêm lịch tuần tra trong quá khứ!')
@@ -133,8 +131,6 @@ export default {
       return result?.label
     },
     selectDate(action) {
-      console.log(' 🚀 ~ selectDate ~ action:', action)
-
       if (action === 'today') {
         this.timeSearch = new Date()
       } else if (action === 'next-month') {
@@ -152,6 +148,10 @@ export default {
       const dateOne = moment(date1)
       const dateTrue = moment(date2)
       return dateOne.isSame(dateTrue)
+    },
+
+    labelPatrolSchedule($event, item, data) {
+      this.detailLeave = item
     },
 
     formattedTitle(val) {

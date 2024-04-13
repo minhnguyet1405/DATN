@@ -1,0 +1,4 @@
+- Tạo Database postgresql : https://stackjava.com/postgresql/huong-dan-cai-dat-va-cau-hinh-postgresql-tren-windows.html
+- Cài rabbitMQ: https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.13.0/rabbitmq-server-3.13.0.exe
+- Cài Erlang/OTP: otp_win64_26.2 (https://www.youtube.com/watch?v=V9DWKbalbWQ)
+- Tạo plugin rabbitMQ C:\Program Files\RabbitMQ Server\rabbitmq_server-3.13.0\sbin > rabbitmq-plugins enable rabbitmq_management

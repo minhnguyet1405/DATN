@@ -1,0 +1,16 @@
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\config\SecurityConfig.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\messaging\rabbitmq\RabbitMQClient.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\messaging\rabbitmq\RabbitMQConfig.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\thread\ThreadManager.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\validation\AbstractValidation.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\config\GatewayConfig.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\exception\FileNotFoundException.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\validation\GatewayValidation.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\config\SwaggerConfig.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\GatewayServiceApplication.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\controller\GatewayController.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\exception\ValidationException.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\exception\FileStorageException.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\schedulers\Schedulers.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\controller\BaseController.java
+C:\Users\Admin\Desktop\DATN\BE\gateway-service\src\main\java\com\tth\gateway\thread\ExecutorServiceConfig.java

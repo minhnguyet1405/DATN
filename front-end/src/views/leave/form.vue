@@ -10,10 +10,10 @@
     <div>
       <div>
         <el-form ref="form" :rules="rules" label-width="140px" size="mini" label-position="left" :model="form">
-          <el-form-item prop="status" label="Trạng thái">
-            <el-select v-model="form.status" placeholder="Chọn trạng thái">
+          <el-form-item prop="type" label="Trạng thái">
+            <el-select v-model="form.type" placeholder="Chọn trạng thái">
               <el-option
-                v-for="item in leaveStatus"
+                v-for="item in leaveType"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -67,6 +67,13 @@
             @click="handleCancel"
           >Hủy bỏ</el-button>
           <el-button
+            v-if="detailLeave"
+            size="small"
+            type="danger"
+            class="btn-cancel pointer"
+            @click="handleDelete"
+          >Xóa</el-button>
+          <el-button
             size="small"
             class="btn-add pointer"
             type="info"
@@ -105,20 +112,20 @@ export default {
       loading: false,
       form: {
         id: null,
-        status: null,
+        type: null,
         startTime: moment(),
         endTime: moment(),
         reason: null,
         receive: null
       },
-      leaveStatus: [
+      leaveType: [
         { value: 'LEAVE', label: 'Nghỉ phép' },
         { value: 'SICK', label: 'Nghỉ ốm' },
         { value: 'ABSENT', label: 'Vắng mặt' }
       ],
       receiveList: [],
       rules: {
-        status: [
+        type: [
           {
             required: true,
             message: 'Vui lòng chọn trạng thái',
@@ -149,18 +156,38 @@ export default {
       }
     }
   },
+
+  watch: {
+    dialogVisible(val) {
+      console.log('11111111111')
+      if (val) {
+        console.log('val', val)
+      }
+    }
+  },
   created() {
-    console.log('detailLeave', this.detailLeave)
+    this.init()
     this.getUser()
   },
   methods: {
+    init() {
+      if (this.detailLeave) {
+        this.form.id = this.detailLeave.id
+        this.form.type = this.detailLeave.type
+        this.form.startTime = this.detailLeave.startTime
+        this.form.endTime = this.detailLeave.endTime
+        this.form.reason = this.detailLeave.reason
+        this.form.receive = this.detailLeave.receive
+      }
+    },
     handleCancel() {
       this.$emit('close')
+      this.resetDialog()
     },
     resetDialog() {
       this.form = {
         id: null,
-        status: null,
+        type: null,
         startTime: moment(),
         endTime: moment(),
         reason: null,
@@ -194,12 +221,62 @@ export default {
           })
         })
     },
+    handleDelete() {
+      this.$alert('Bạn có chắc chắn muốn xóa lịch nghỉ này ?', 'Xóa lịch', {
+        confirmButtonText: 'Xác nhận',
+        callback: action => {
+          this.deleteLeave()
+        }
+      })
+    },
+    deleteLeave() {
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      this.loading = true
+      axios
+        .delete(
+          process.env.VUE_APP_API + 'management/leave/' + this.detailLeave.id, {
+            headers: headers
+          }
+        )
+        .then((response) => {
+          if (
+            response.data.status === 200 ||
+                response.data.status === 201
+          ) {
+            this.$message({
+              message: response.data.message,
+              type: 'success'
+            })
+            this.$emit('success')
+          } else {
+            this.$message({
+              message: response.data.message,
+              type: 'error'
+            })
+            this.$emit('close')
+          }
+          this.loading = false
+          this.resetDialog()
+        })
+        .catch((err) => {
+          this.loading = false
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+          this.$emit('close')
+        })
+    },
     handleSubmit() {
       this.form = this.$root.trimData(this.form)
       this.$refs.form.validate((valid) => {
         if (valid) {
           const params = {
-            status: this.form.status,
+            id: this.form.id,
+            type: this.form.type,
             startTime: moment(this.form.startTime).format('YYYY-MM-DD HH:mm:ss'),
             endTime: moment(this.form.endTime).format('YYYY-MM-DD HH:mm:ss'),
             reason: this.form.reason,
