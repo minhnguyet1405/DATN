@@ -12,6 +12,4 @@ public interface CheckInOutService {
     CheckInOut findFirstByUserIdAndDate(String userId, String date);
 
     void save(CheckInOut checkInOut);
-
-    List<CheckInOut> getAllByMonth(Integer month);
 }

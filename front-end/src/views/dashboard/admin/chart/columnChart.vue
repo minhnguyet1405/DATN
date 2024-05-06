@@ -5,20 +5,31 @@
 <script>
 import Highcharts from 'highcharts'
 export default {
+  props: {
+    leaveList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       chart: null
     }
   },
   watch: {
+    leaveList(val) {
+      if (val) {
+        this.$nextTick(() => {
+          this.initChart(val)
+        })
+      }
+    }
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
+  created() {
+    console.log('leaveList', this.leaveList)
   },
   methods: {
-    initChart() {
+    initChart(val) {
       Highcharts.chart('columnChart', {
         chart: {
           type: 'column'
@@ -30,7 +41,7 @@ export default {
           text: ''
         },
         xAxis: {
-          categories: ['USA', 'China', 'Brazil', 'EU', 'India', 'Russia'],
+          categories: val.map(i => i.department),
           crosshair: true,
           accessibility: {
             description: 'Countries'
@@ -53,8 +64,8 @@ export default {
         },
         series: [
           {
-            name: 'Wheat',
-            data: [51086, 136000, 5500, 141000, 107180, 77000]
+            name: 'Số lượt nghỉ',
+            data: val.map(i => i.number)
           }
         ]
       })

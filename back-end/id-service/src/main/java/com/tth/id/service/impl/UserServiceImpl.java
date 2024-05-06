@@ -1,9 +1,11 @@
 package com.tth.id.service.impl;
 
 import com.tth.common.utils.StringUtil;
+import com.tth.id.model.Department;
 import com.tth.id.model.User;
 import com.tth.id.model.dto.UserDTO;
 import com.tth.id.model.dto.UserResponse;
+import com.tth.id.repository.DepartmentRepository;
 import com.tth.id.repository.UserRepository;
 import com.tth.id.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     @Override
     public Page<UserResponse> getAll(Pageable pageable, String search) {
@@ -58,6 +63,11 @@ public class UserServiceImpl implements UserService {
                 userResponse.setFullName(user.getFullName());
                 userResponse.setPhoneNumber(user.getPhoneNumber());
                 userResponse.setRole(user.getRole());
+                userResponse.setPosition(user.getPosition());
+                if(!StringUtil.isNullOrEmpty(user.getDepartment())){
+                    Department department = departmentRepository.findById(user.getDepartment()).orElse(null);
+                    userResponse.setDepartment(department);
+                }
                 return userResponse;
             });
         }
@@ -86,6 +96,7 @@ public class UserServiceImpl implements UserService {
         userResponse.setAddress(user.getAddress());
         userResponse.setAvatar(user.getAvatar());
         userResponse.setRole(user.getRole());
+        userResponse.setPosition(user.getPosition());
         return userResponse;
     }
 
@@ -106,6 +117,10 @@ public class UserServiceImpl implements UserService {
         user.setAddress(userDTO.getAddress());
         user.setAvatar(userDTO.getAvatar());
         user.setRole(userDTO.getRole());
+        user.setPosition(userDTO.getPosition());
+        if(!StringUtil.isNullOrEmpty(userDTO.getAvatar())){
+            user.setAvatar("http://localhost:8683/v1.0/upload/user/avatar/21042024/4221d1bf-22f7-47e6-bd7e-006d3abf81ce.png");
+        }
         return user;
     }
 
@@ -126,6 +141,11 @@ public class UserServiceImpl implements UserService {
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         user.setBirthday(format.parse(userDTO.getBirthday()));
         user.setGender(userDTO.getGender());
+        user.setPosition(userDTO.getPosition());
+        user.setStatus(1);
+        if(StringUtil.isNullOrEmpty(userDTO.getAvatar())){
+            user.setAvatar("http://localhost:8683/v1.0/upload/user/avatar/21042024/4221d1bf-22f7-47e6-bd7e-006d3abf81ce.png");
+        }
         User newUser = userRepository.save(user);
         return transformUserResponse(newUser);
     }

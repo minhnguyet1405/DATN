@@ -14,25 +14,36 @@ import java.util.List;
 
 @Repository
 public interface CheckInOutRepository extends JpaRepository<CheckInOut, String> {
-    Page<CheckInOut> findAllByUserIdAndMonthOrderByTimeInDesc(Pageable pageable, String userId, Integer month);
+    Page<CheckInOut> findAllByUserIdAndMonthOrderByDate(Pageable pageable, String userId, Integer month);
     CheckInOut findFirstByUserIdAndDate(String userId, String date);
-    @Query("SELECT sum (c.timeLate) from CheckInOut c where c.userId in :userIds and c.timeIn >= :startTime and c.timeOut <= :endTime")
-    long sumTimeLate(@Param("userIds") List<String> userIds, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
-    @Query("SELECT sum (c.timeLate) from CheckInOut c where c.timeIn >= :startTime and c.timeOut <= :endTime")
-    long sumTimeLate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
-    @Query("SELECT sum (c.timeSoon) from CheckInOut c where c.userId in :userIds and c.timeIn >= :startTime and c.timeOut <= :endTime")
-    long sumTimeSoon(@Param("userIds") List<String> userIds, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
-    @Query("SELECT sum (c.timeSoon) from CheckInOut c where c.timeIn >= :startTime and c.timeOut <= :endTime")
-    long sumTimeSoon(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    @Query("SELECT count (c.id) from CheckInOut c where c.userId in :userIds and c.updateTime >= :startTime and c.updateTime <= :endTime and ((c.timeLate is not null and c.timeLate > 0) or (c.timeSoon is not null and c.timeSoon > 0))  and c.isWeekend = false")
+    long countTimeLate(@Param("userIds") List<String> userIds, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    @Query("SELECT count (c.id) from CheckInOut c where c.updateTime >= :startTime and c.updateTime <= :endTime and ((c.timeLate is not null and c.timeLate > 0) or (c.timeSoon is not null and c.timeSoon > 0))  and  c.isWeekend = false")
+    long countTimeLate(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    @Query("SELECT count (c.id) from CheckInOut c where c.userId in :userIds and c.updateTime >= :startTime and c.updateTime <= :endTime and (c.timeSoon is not null and c.timeSoon > 0) and c.isWeekend = false")
+    long countTimeSoon(@Param("userIds") List<String> userIds, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    @Query("SELECT count (c.id) from CheckInOut c where c.updateTime >= :startTime and c.updateTime <= :endTime and (c.timeSoon is not null and c.timeSoon > 0)  and c.isWeekend = false")
+    long countTimeSoon(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     @Query("SELECT count (c.id) from CheckInOut c where c.userId in :userIds and c.updateTime >= :startTime and c.updateTime <= :endTime and c.timeIn is null and c.timeOut is null and c.isWeekend = false")
     long sumCheckNull(@Param("userIds") List<String> userIds, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
     @Query("SELECT count (c.id) from CheckInOut c where c.updateTime >= :startTime and c.updateTime <= :endTime and c.timeIn is null and c.timeOut is null and c.isWeekend = false")
     long sumCheckNull(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    @Query("SELECT c from CheckInOut c where c.userId in :userIds and c.updateTime >= :startTime and c.updateTime <= :endTime and c.timeIn is null and c.timeOut is null and c.isWeekend = false")
+    List<CheckInOut> getLeaveReal(@Param("userIds") List<String> userIds, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+    @Query("SELECT c from CheckInOut c where c.updateTime >= :startTime and c.updateTime <= :endTime and c.timeIn is null and c.timeOut is null and c.isWeekend = false")
+    List<CheckInOut> getLeaveReal(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+
     CheckInOut findFirstByDateAndUserId(String time, String userId);
 
-    List<CheckInOut> findByMonth(Integer month);
+    @Query("select c from CheckInOut c where c.month = :month and c.userId in :userIds and c.isWeekend = :weekend and (c.timeLate > 0 or c.timeSoon > 0)")
+    List<CheckInOut> findByMonthAndUserIdInAndWeekend(@Param("month") Integer month, @Param("userIds") List<String> userIds ,@Param("weekend") boolean weekend);
+
+    @Query("select c from CheckInOut c where c.month = :month and c.isWeekend = :weekend and (c.timeLate > 0 or c.timeSoon > 0)")
+    List<CheckInOut> findByMonthAndWeekend(@Param("month") Integer month, @Param("weekend") boolean weekend);
 
 }

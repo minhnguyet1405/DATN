@@ -1,5 +1,6 @@
 package com.tth.id.model.dto;
 
+import com.tth.id.model.Department;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,5 +33,7 @@ public class UserResponse implements Serializable {
 
     private Integer role;
 
-    private Integer department;
+    private Department department;
+
+    private String position;
 }

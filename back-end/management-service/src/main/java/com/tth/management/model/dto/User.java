@@ -1,6 +1,7 @@
 package com.tth.management.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User implements Serializable {
 
     @Id
@@ -29,8 +31,8 @@ public class User implements Serializable {
 
     private Integer gender;
 
-    @Temporal(TemporalType.DATE)
-    private Date birthday;
+//    @Temporal(TemporalType.DATE)
+    private String birthday;
 
     private String address;
 
@@ -50,7 +52,9 @@ public class User implements Serializable {
 
     private Integer role;
 
-    private String department;
+    private Department department;
+
+    private String position;
 
     private Integer status; //0: lock, 1: online
 }

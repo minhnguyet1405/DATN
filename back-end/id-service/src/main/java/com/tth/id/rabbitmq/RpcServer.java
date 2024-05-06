@@ -65,6 +65,9 @@ public class RpcServer {
                         else if("/user/internal".equalsIgnoreCase(requestPath)) {
                             response = userController.getUserInterval();
                         }
+                        else if("/user/detail".equalsIgnoreCase(requestPath)) {
+                            response = userController.getUserByIdInterval(pathParam);
+                        }
                         else if("/user/department".equalsIgnoreCase(requestPath)) {
                             response = departmentController.getAllDepartment(urlParam, headerParam);
                         }else if("/user/by-department".equalsIgnoreCase(requestPath)) {

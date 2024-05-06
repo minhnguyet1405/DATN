@@ -55,5 +55,29 @@
     "path": "/management/leave-by-type",
     "method": "GET",
     "rabbit": "rpc"
+  },{
+    "path": "/management/top-user-late-soon",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/frequency-late-soon",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave-by-time",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave-by-department",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave-approve",
+    "method": "GET",
+    "rabbit": "rpc"
+  },{
+    "path": "/management/leave-approve",
+    "method": "POST",
+    "rabbit": "rpc"
   }
 ]

@@ -53,9 +53,14 @@ public class UserController extends BaseController {
             } else {
                 pageable = PageRequest.of(0, 20, Sort.by("username"));
             }
-            Page<UserResponse> userResponsePage = userService.getAll(pageable, search);
-            response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách người dùng",
-                    new MessageContent(HttpStatus.OK.value(), "Lấy danh sách người dùng", userResponsePage.getContent(), userResponsePage.getTotalElements()));
+            Page<UserResponse> userResponsePage = userService.getAll(pageable, search.toUpperCase());
+            if(userResponsePage != null){
+                response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách người dùng",
+                        new MessageContent(HttpStatus.OK.value(), "Lấy danh sách người dùng", userResponsePage.getContent(), userResponsePage.getTotalElements()));
+            }else{
+                response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách người dùng",
+                        new MessageContent(HttpStatus.OK.value(), "Lấy danh sách người dùng", null));
+            }
         }
 
         return response;
@@ -69,6 +74,14 @@ public class UserController extends BaseController {
         Page<UserResponse> userResponsePage = userService.getAll(pageable, search);
         response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách người dùng",
                 new MessageContent(HttpStatus.OK.value(), "Lấy danh sách người dùng", userResponsePage.getContent(), userResponsePage.getTotalElements()));
+        return response;
+    }
+
+    public ResponseMessage getUserByIdInterval(String pathParam) {
+        ResponseMessage response = null;
+        User user = userService.findByUuid(pathParam);
+        response = new ResponseMessage(HttpStatus.OK.value(), "Lấy người dùng theo uuid",
+                new MessageContent(HttpStatus.OK.value(), "Lấy người dùng theo uuid", user));
         return response;
     }
 
@@ -270,6 +283,7 @@ public class UserController extends BaseController {
         String avatar = (String) bodyParam.get("avatar");
         Integer role = (Integer) bodyParam.get("role");
         String department = (String) bodyParam.get("department");
+        String position = (String) bodyParam.get("position");
 
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(username);
@@ -284,6 +298,7 @@ public class UserController extends BaseController {
         userDTO.setAvatar(avatar);
         userDTO.setRole(role);
         userDTO.setDepartment(department);
+        userDTO.setPosition(position);
         return userDTO;
     }
 

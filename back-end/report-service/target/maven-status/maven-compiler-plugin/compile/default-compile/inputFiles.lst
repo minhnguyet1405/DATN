@@ -1,0 +1,15 @@
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\rabbitmq\RpcServer.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\rabbitmq\RabbitMQClient.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\ReportServiceApplication.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\controller\BaseController.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\exception\FileNotFoundException.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\dto\AuthorizationResponseDTO.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\rabbitmq\RpcConfig.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\service\ReportService.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\service\impl\ReportServiceImpl.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\validation\AbstractValidation.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\rabbitmq\RabbitMQProperties.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\exception\FileStorageException.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\exception\ValidationException.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\controller\ReportController.java
+C:\Users\Admin\Desktop\quan_ly_nhan_vien\back-end\report-service\src\main\java\com\tth\report\rabbitmq\RabbitMQConfig.java

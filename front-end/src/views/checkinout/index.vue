@@ -38,23 +38,26 @@
         :data="checkinList"
         style="width: 100%"
       >
-        <el-table-column label="Ngày">
+        <el-table-column label="Ngày" width="150">
           <template slot-scope="scope"><span>{{ formatDate(scope.row.date) }}</span></template>
         </el-table-column>
+        <el-table-column label="">
+          <template slot-scope="scope"><span>{{ getDay(scope.row.date) }}</span></template>
+        </el-table-column>
         <el-table-column label="In">
-          <template slot-scope="scope"><span>{{ formatTime(scope.row.timeIn) }}</span></template>
+          <template slot-scope="scope"><span>{{ scope.row.timeIn ? formatTime(scope.row.timeIn) :'--' }}</span></template>
         </el-table-column>
         <el-table-column label="Out">
           <template slot-scope="scope"><span>{{ scope.row.timeOut ? formatTime(scope.row.timeOut) :'--' }}</span></template>
         </el-table-column>
         <el-table-column label="Số phút đi muộn">
-          <template slot-scope="scope"><span>{{ scope.row.timeLate }}</span></template>
+          <template slot-scope="scope"><span>{{ !isWeekend(scope.row.date) ? scope.row.timeLate : '--' }}</span></template>
         </el-table-column>
         <el-table-column label="Số phút về sớm">
-          <template slot-scope="scope"><span>{{ scope.row.timeSoon }}</span></template>
+          <template slot-scope="scope"><span>{{ !isWeekend(scope.row.date) ? scope.row.timeSoon : '--' }}</span></template>
         </el-table-column>
         <el-table-column label="Ghi chú">
-          <template slot-scope="scope"><span>{{ scope.row.reason ? scope.row.reason :'--' }}</span></template>
+          <template slot-scope="scope"><span>{{ scope.row.note }}</span></template>
         </el-table-column>
       </el-table>
       <el-pagination
@@ -176,11 +179,27 @@ export default {
       this.getList()
     },
     formatDate(val) {
-      console.log(' 🚀 ~ formatDate ~ ', moment(val).format('DD/MM/YYYY'))
       return moment(val).format('DD/MM/YYYY')
     },
     formatTime(val) {
       return val ? moment(val).format('HH:mm') : ''
+    },
+    getDay(date) {
+      return this.transLate(moment(date).format('dddd'))
+    },
+    isWeekend(date) {
+      const dateToCheck = moment(date)
+      const isWeekend = dateToCheck.isoWeekday() === 6 || dateToCheck.isoWeekday() === 7
+      if (isWeekend) return true
+    },
+    transLate(day) {
+      if (day === 'Monday') return 'Thứ 2'
+      if (day === 'Tuesday') return 'Thứ 3'
+      if (day === 'Wednesday') return 'Thứ 4'
+      if (day === 'Thursday') return 'Thứ 5'
+      if (day === 'Friday') return 'Thứ 6'
+      if (day === 'Saturday') return 'Thứ 7'
+      if (day === 'Sunday') return 'Chủ nhật'
     }
   }
 }

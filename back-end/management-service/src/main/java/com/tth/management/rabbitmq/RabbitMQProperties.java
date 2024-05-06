@@ -30,6 +30,15 @@ public class RabbitMQProperties {
     @Value("${management.rpc.key}")
     public static String MANAGEMENT_RPC_KEY;
 
+    @Value("${socket.rpc.exchange}")
+    public static String SOCKET_RPC_EXCHANGE;
+
+    @Value("${socket.rpc.queue}")
+    public static String SOCKET_RPC_QUEUE;
+
+    @Value("${socket.rpc.key}")
+    public static String SOCKET_RPC_KEY;
+
     @Autowired
     public RabbitMQProperties(@Value("${user.rpc.exchange}") String userRpcExchange,
                               @Value("${user.rpc.queue}") String userRpcQueue,
@@ -37,7 +46,10 @@ public class RabbitMQProperties {
                               @Value("${user.rpc.authen.url}") String userRpcAuthenUrl,
                               @Value("${management.rpc.exchange}") String managementRpcExchange,
                               @Value("${management.rpc.queue}") String managementRpcQueue,
-                              @Value("${management.rpc.key}") String managementRpcKey){
+                              @Value("${management.rpc.key}") String managementRpcKey,
+                              @Value("${socket.rpc.exchange}") String socketRpcExchange,
+                              @Value("${socket.rpc.queue}") String socketRpcQueue,
+                              @Value("${socket.rpc.key}") String socketRpcKey){
         //user
         USER_RPC_EXCHANGE = userRpcExchange;
         USER_RPC_QUEUE = userRpcQueue;
@@ -48,5 +60,9 @@ public class RabbitMQProperties {
         MANAGEMENT_RPC_EXCHANGE = managementRpcExchange;
         MANAGEMENT_RPC_QUEUE = managementRpcQueue;
         MANAGEMENT_RPC_KEY = managementRpcKey;
+
+        SOCKET_RPC_EXCHANGE = socketRpcExchange;
+        SOCKET_RPC_QUEUE = socketRpcQueue;
+        SOCKET_RPC_KEY = socketRpcKey;
     }
 }

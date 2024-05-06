@@ -35,4 +35,6 @@ public class UserDTO implements Serializable {
     private Integer role;
 
     private String department;
+
+    private String position;
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class CheckInOutServiceImpl implements CheckInOutService {
 
     @Override
     public Page<CheckInOut> findAllByUserIdAndMonth(Pageable pageable, String userId, Integer month) {
-        return checkInOutRepository.findAllByUserIdAndMonthOrderByTimeInDesc(pageable, userId, month);
+        return checkInOutRepository.findAllByUserIdAndMonthOrderByDate(pageable, userId, month);
     }
 
     @Override
@@ -30,9 +31,5 @@ public class CheckInOutServiceImpl implements CheckInOutService {
         checkInOutRepository.save(checkInOut);
     }
 
-    @Override
-    public List<CheckInOut> getAllByMonth(Integer month) {
-        return checkInOutRepository.findByMonth(month);
-    }
 
 }

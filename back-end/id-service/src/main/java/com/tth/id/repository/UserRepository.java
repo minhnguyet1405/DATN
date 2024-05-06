@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Page<User> findAllByStatus(Pageable pageable, Integer status);
 
-    @Query("SELECT u FROM User u WHERE (u.username like %:username% OR u.fullName like %:fullName% OR u.email like %:email%) AND u.status = :status")
+    @Query("SELECT u FROM User u WHERE (upper(u.username) like %:username% OR upper(u.fullName) like %:fullName% OR upper(u.email) like %:email%) AND u.status = :status")
     Page<User> findByKeyword(@Param("username") String username, @Param("fullName") String fullName,
                              @Param("email") String email, @Param("status") Integer status, Pageable pageable);
 

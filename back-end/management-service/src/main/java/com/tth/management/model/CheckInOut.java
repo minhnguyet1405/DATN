@@ -53,4 +53,10 @@ public class CheckInOut implements Serializable {
 
     @Column(name = "is_weekend")
     private boolean isWeekend;
+
+    @Transient
+    private String departmentId;
+
+    @Column(name = "note")
+    private String note;
 }

@@ -5,7 +5,7 @@
       <div class="dashboard-title">Tổng quan</div>
       <div class="db-header-filter">
         <div>
-          <el-select v-model="departmentId" placeholder="Tất cả đơn vị">
+          <el-select v-model="departmentId" placeholder="Tất cả đơn vị" @change="getUserByDepartment">
             <el-option
               v-for="item in departmentList"
               :key="item.id"
@@ -24,16 +24,16 @@
       <div class="db-left">
         <div class="db-left-item">
           <div class="db-left-item-title">Đi muộn, về sớm</div>
-          <el-select v-model="time1" placeholder="Select">
+          <el-select v-model="time1" placeholder="Select" @change="getCountTimeLateSoon">
             <el-option
-              v-for="item in optionTimes"
+              v-for="item in optionTimes1"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             />
           </el-select>
           <div class="db-left-item-number">
-            <div>0</div>
+            <div>{{ countTimeLate }}</div>
           </div>
           <div class="db-left-item-detail">
             Chi tiết
@@ -41,16 +41,16 @@
         </div>
         <div class="db-left-item">
           <div class="db-left-item-title">Thực tế đã nghỉ</div>
-          <el-select v-model="time2" placeholder="Select">
+          <el-select v-model="time2" placeholder="Select" @change="getRealLeave">
             <el-option
-              v-for="item in optionTimes"
+              v-for="item in optionTimes1"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             />
           </el-select>
           <div class="db-left-item-number">
-            <div>0</div>
+            <div>{{ leaveReal }}</div>
           </div>
           <div class="db-left-item-detail">
             Chi tiết
@@ -58,16 +58,16 @@
         </div>
         <div class="db-left-item">
           <div class="db-left-item-title">Kế hoạch nghỉ</div>
-          <el-select v-model="time3" placeholder="Select">
+          <el-select v-model="time3" placeholder="Select" @change="getLeavePlan">
             <el-option
-              v-for="item in optionTimes"
+              v-for="item in optionTimes1"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             />
           </el-select>
           <div class="db-left-item-number">
-            <div>0</div>
+            <div>{{ leavePlan }}</div>
           </div>
           <div class="db-left-item-detail">
             Chi tiết
@@ -80,8 +80,8 @@
             <div class="leave-time-header">
               <div>
                 <div class="leave-time-header-title">Tình hình nghỉ theo thời gian</div>
-                <div class="leave-time-header-content">Tất cả đơn vị</div>
-                <div class="leave-time-header-content">(01/11/2021 - 05/12/2021)</div>
+                <div class="leave-time-header-content">{{ lableDepartment }}</div>
+                <div class="leave-time-header-content">{{ getLabelTime }}</div>
               </div>
               <div class="leave-time-icon">
                 <i class="el-icon-refresh-left" />
@@ -89,7 +89,7 @@
                 <i class="el-icon-setting" />
               </div>
             </div>
-            <LineChart />
+            <LineChart :leave-list="leaveByTimeList" />
           </div>
           <div class="db-right-top-item">
             <div class="leave-time-header">
@@ -100,7 +100,7 @@
               </div>
               <div class="leave-time-icon" />
             </div>
-            <ColumnChart />
+            <ColumnChart :leave-list="leaveByDepartmentList" />
           </div>
         </div>
         <div class="db-right-bottom">
@@ -109,36 +109,36 @@
               <div>
                 <div class="leave-time-header-title">Phân tích loại nghỉ</div>
                 <div class="leave-time-header-content-2">Công ty cổ phần công nghệ viễn thông Elcom</div>
-                <div class="leave-time-header-content-2">(01/11/2021 - 05/12/2021)</div>
+                <div class="leave-time-header-content-2">{{ getLabelTime }}</div>
               </div>
             </div>
-            <PieChart />
+            <PieChart :leave-list="leaveByTypeList" />
           </div>
           <div class="db-right-bottom-item">
             <div>
               <div class="leave-time-header-title">Danh sách đi muộn về sớm</div>
               <div class="leave-time-header-content-2">Công ty cổ phần công nghệ viễn thông Elcom</div>
-              <div class="leave-time-header-content-2">(01/11/2021 - 05/12/2021)</div>
+              <div class="leave-time-header-content-2">{{ getLabelTime }}</div>
             </div>
             <el-table
               class="table1"
-              :data="tableData1"
+              :data="topUserList"
               style="width: 100%"
             >
               <el-table-column label="" width="70px">
                 <template slot-scope="{row}">
-                  <img :src="row.imageUrl">
+                  <img :src="getUserById(row.userId).avatar">
                 </template>
               </el-table-column>
               <el-table-column label="" width="220px">
                 <template slot-scope="{row}">
-                  <div class="table-name">{{ row.name }}</div>
-                  <div class="table-department">{{ row.department }}</div>
+                  <div class="table-name">{{ getUserById(row.userId).fullName }}</div>
+                  <div class="table-department">{{ getUserById(row.userId).department ? getUserById(row.userId).department.name : '' }}</div>
                 </template>
               </el-table-column>
               <el-table-column label="">
                 <template slot-scope="{row}">
-                  <span class="table-number">{{ row.number }}</span>
+                  <span class="table-number">{{ row.count }}</span>
                 </template>
               </el-table-column>
             </el-table>
@@ -146,22 +146,22 @@
           <div class="db-right-bottom-item">
             <div>
               <div class="leave-time-header-title">Tần suất đi muộn về sớm</div>
-              <div class="leave-time-header-content-2">Tất cả các đơn vị</div>
-              <div class="leave-time-header-content-2">(01/11/2021 - 05/12/2021)</div>
+              <div class="leave-time-header-content-2">{{ lableDepartment }}}</div>
+              <div class="leave-time-header-content-2">{{ getLabelTime }}</div>
             </div>
             <el-table
               class="table2"
-              :data="tableData2"
+              :data="topfrequencyList"
               style="width: 100%"
             >
               <el-table-column label="" width="250px">
                 <template slot-scope="{row}">
-                  <span class="table-name">{{ row.title }}</span>
+                  <span class="table-name">{{ row.frequency }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="">
                 <template slot-scope="{row}">
-                  <span class="table-number-2">{{ row.number }} lần</span>
+                  <span class="table-number-2">{{ row.count }} lần</span>
                   <i class="el-icon-caret-right" />
                 </template>
               </el-table-column>
@@ -179,6 +179,9 @@
 import LineChart from './chart/lineChart.vue'
 import ColumnChart from './chart/columnChart.vue'
 import PieChart from './chart/pieChart.vue'
+import axios from 'axios'
+import Cookies from 'js-cookie'
+import moment from 'moment'
 
 export default {
   components: {
@@ -188,15 +191,25 @@ export default {
   },
   data() {
     return {
+      lableDepartment: 'Tất cả các đơn vị',
       departmentId: null,
+      userList: [],
       departmentList: [],
-      time1: 'this_week',
+      topUserList: [],
+      topfrequencyList: [],
+      leaveByTimeList: [],
+      leaveByDepartmentList: [],
+      time1: 'today',
       time2: 'today',
-      time3: 'next_week',
-      optionTimes: [
+      time3: 'today',
+      countTimeLate: 0,
+      leaveReal: 0,
+      leavePlan: 0,
+      leaveByTypeList: [],
+      optionTimes1: [
         { value: 'today', label: 'Hôm nay' },
         { value: 'this_week', label: 'Tuàn này' },
-        { value: 'next_week', label: 'tuần sau' }
+        { value: 'this_month', label: 'Tháng này' }
       ],
       tableData1: [
         { imageUrl: 'http://103.21.151.166:8683/v1.0/upload/user/avatar/05032024/b194f8d9-ad53-4f87-a93a-82c5bc61b12a.png', name: 'Phạm Minh Thắng', department: 'Phòng ITS', number: 40 }
@@ -208,6 +221,15 @@ export default {
       ]
     }
   },
+  computed: {
+    getLabelTime() {
+      const startOfMonth = moment().startOf('month')
+      const endOfmonth = moment().endOf('month')
+      const startTime = moment(startOfMonth).format('DD/MM/YYYY')
+      const endTime = moment(endOfmonth).format('DD/MM/YYYY')
+      return startTime + ' - ' + endTime
+    }
+  },
   created() {
     this.init()
   },
@@ -217,6 +239,387 @@ export default {
     }
   },
   methods: {
+    async init() {
+      await this.getUser()
+      await this.getDepartment()
+      await this.getCountTimeLate()
+      this.getRealLeave()
+      this.getLeavePlan()
+      this.getLeaveByType()
+      this.getTopUser()
+      this.getTopfrequency()
+      this.getLeaveByTime()
+      this.getLeaveByDepartment()
+    },
+    getDepartment() {
+      this.loading = true
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'user/department', {
+          headers: headers,
+          params: {
+            page: 0,
+            size: 100
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.departmentList = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getUser() {
+      this.loading = true
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'user', {
+          headers: headers,
+          params: {
+            page: 0,
+            size: 100
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.userList = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getUserByDepartment() {
+      this.lableDepartment = this.departmentList.find(i => i.id === this.departmentId).name
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'user/by-department', {
+          headers: headers,
+          params: {
+            department: this.departmentId
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.userList = res.data.data
+            this.init()
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getCountTimeLate() {
+      const param = {
+        startTime: null,
+        endTime: null,
+        userIds: null
+      }
+      if (this.time1 === 'today') {
+        param.startTime = moment().format('YYYY-MM-DD 00:00:00')
+        param.endTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      } else if (this.time1 === 'this_week') {
+        const startOfWeek = moment().startOf('week')
+        param.startTime = moment(startOfWeek).format('YYYY-MM-DD 00:00:00')
+        param.endTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        const startOfMonth = moment().startOf('month')
+        param.startTime = moment(startOfMonth).format('YYYY-MM-DD 00:00:00')
+        param.endTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      }
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'management/time-late', {
+          headers: headers,
+          params: {
+            startTime: param.startTime,
+            endTime: param.endTime,
+            userIds: this.userList.length > 0 ? this.userList.map(u => u.uuid).join(',') : null
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.countTimeLate = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getRealLeave() {
+      const param = {
+        startTime: null,
+        endTime: null,
+        userIds: null
+      }
+      if (this.time2 === 'today') {
+        param.startTime = moment().format('YYYY-MM-DD 00:00:00')
+        param.endTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      } else if (this.time2 === 'this_week') {
+        const startOfWeek = moment().startOf('week')
+        param.startTime = moment(startOfWeek).format('YYYY-MM-DD 00:00:00')
+        param.endTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      } else {
+        const startOfMonth = moment().startOf('month')
+        param.startTime = moment(startOfMonth).format('YYYY-MM-DD 00:00:00')
+        param.endTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      }
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'management/leave-real', {
+          headers: headers,
+          params: {
+            startTime: param.startTime,
+            endTime: param.endTime,
+            userIds: this.userList.length > 0 ? this.userList.map(u => u.uuid).join(',') : null
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.leaveReal = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getLeavePlan() {
+      const param = {
+        startTime: null,
+        endTime: null,
+        userIds: null
+      }
+      if (this.time3 === 'today') {
+        param.startTime = moment().format('YYYY-MM-DD 00:00:00')
+        param.endTime = moment().format('YYYY-MM-DD 23:59:59')
+      } else if (this.time3 === 'this_week') {
+        const startOfWeek = moment().startOf('week')
+        const endOfWeek = moment().endOf('week')
+        param.startTime = moment(startOfWeek).format('YYYY-MM-DD 00:00:00')
+        param.endTime = moment(endOfWeek).format('YYYY-MM-DD 23:59:59')
+      } else {
+        const startOfMonth = moment().startOf('month')
+        const endOfmonth = moment().endOf('month')
+        param.startTime = moment(startOfMonth).format('YYYY-MM-DD 00:00:00')
+        param.endTime = moment(endOfmonth).format('YYYY-MM-DD 23:59:59')
+      }
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'management/leave-plan', {
+          headers: headers,
+          params: {
+            startTime: param.startTime,
+            endTime: param.endTime,
+            userIds: this.userList.length > 0 ? this.userList.map(u => u.uuid).join(',') : null
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.leavePlan = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getLeaveByType() {
+      this.leaveByTypeList = []
+      const param = {
+        startTime: null,
+        endTime: null,
+        userIds: null
+      }
+      const startOfMonth = moment().startOf('month')
+      param.startTime = moment(startOfMonth).format('YYYY-MM-DD 00:00:00')
+      param.endTime = moment().format('YYYY-MM-DD 23:59:59')
+
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'management/leave-by-type', {
+          headers: headers,
+          params: {
+            startTime: param.startTime,
+            endTime: param.endTime,
+            userIds: this.userList.length > 0 ? this.userList.map(u => u.uuid).join(',') : null
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.leaveByTypeList = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getTopUser() {
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'management/top-user-late-soon', {
+          headers: headers,
+          params: {
+            month: moment().month() + 1,
+            userIds: this.userList.length > 0 ? this.userList.map(u => u.uuid).join(',') : null
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.topUserList = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getTopfrequency() {
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'management/frequency-late-soon', {
+          headers: headers,
+          params: {
+            month: moment().month() + 1,
+            userIds: this.userList.length > 0 ? this.userList.map(u => u.uuid).join(',') : null
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.topfrequencyList = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getLeaveByTime() {
+      this.leaveByTimeList = []
+      const startOfMonth = moment().startOf('month')
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'management/leave-by-time', {
+          headers: headers,
+          params: {
+            startTime: moment(startOfMonth).format('YYYY-MM-DD 00:00:00'),
+            endTime: moment().format('YYYY-MM-DD 23:59:59'),
+            userIds: this.userList.length > 0 ? this.userList.map(u => u.uuid).join(',') : null
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.leaveByTimeList = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getLeaveByDepartment() {
+      this.leaveByDepartmentList = []
+      const startOfMonth = moment().startOf('month')
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'management/leave-by-department', {
+          headers: headers,
+          params: {
+            startTime: moment(startOfMonth).format('YYYY-MM-DD 00:00:00'),
+            endTime: moment().format('YYYY-MM-DD 23:59:59'),
+            userIds: this.userList.length > 0 ? this.userList.map(u => u.uuid).join(',') : null
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.leaveByDepartmentList = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    getCountTimeLateSoon() {
+      this.getCountTimeLate()
+      this.getCountTimeSoon()
+    },
+    getUserById(id) {
+      return this.userList.find(i => i.uuid === id)
+    }
   }
 }
 </script>

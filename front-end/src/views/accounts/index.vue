@@ -265,6 +265,24 @@
                 <el-radio :label="1">Nữ</el-radio>
               </el-radio-group>
             </el-form-item>
+            <el-form-item
+              label="Phòng ban"
+              prop="department"
+            >
+              <el-select
+                v-model="userInfo.department"
+                style="width: 100%"
+                filterable
+                placeholder="Vui lòng chọn"
+              >
+                <el-option
+                  v-for="department in departmentList"
+                  :key="department.id"
+                  :label="department.name"
+                  :value="department.id"
+                />
+              </el-select>
+            </el-form-item>
           </div>
           <div class="item-right">
             <el-form-item
@@ -301,26 +319,18 @@
                 />
               </el-select>
             </el-form-item>
+            <el-form-item
+
+              label="Vị trí"
+              prop="position"
+            >
+              <el-input
+                v-model="userInfo.position"
+                placeholder="Java,C#,C++..."
+              />
+            </el-form-item>
           </div>
         </div>
-        <el-form-item
-          label="Phòng ban"
-          prop="department"
-        >
-          <el-select
-            v-model="userInfo.department"
-            style="width: 100%"
-            filterable
-            placeholder="Vui lòng chọn"
-          >
-            <el-option
-              v-for="department in departmentList"
-              :key="department.id"
-              :label="department.name"
-              :value="department.id"
-            />
-          </el-select>
-        </el-form-item>
       </el-form>
 
       <div slot="footer">
@@ -473,6 +483,24 @@
                 <el-radio :label="1">Nữ</el-radio>
               </el-radio-group>
             </el-form-item>
+            <el-form-item
+              label="Phòng ban"
+              prop="department"
+            >
+              <el-select
+                v-model="userInfo.department"
+                style="width: 100%"
+                filterable
+                placeholder="Vui lòng chọn"
+              >
+                <el-option
+                  v-for="department in departmentList"
+                  :key="department.id"
+                  :label="department.name"
+                  :value="department.id"
+                />
+              </el-select>
+            </el-form-item>
           </div>
           <div class="item-right">
             <el-form-item
@@ -509,26 +537,18 @@
                 />
               </el-select>
             </el-form-item>
+            <el-form-item
+
+              label="Vị trí"
+              prop="position"
+            >
+              <el-input
+                v-model="userInfo.position"
+                placeholder="Java,C#,C++..."
+              />
+            </el-form-item>
           </div>
         </div>
-        <el-form-item
-          label="Phòng ban"
-          prop="department"
-        >
-          <el-select
-            v-model="userInfo.department"
-            style="width: 100%"
-            filterable
-            placeholder="Vui lòng chọn"
-          >
-            <el-option
-              v-for="department in departmentList"
-              :key="department.id"
-              :label="department.name"
-              :value="department.id"
-            />
-          </el-select>
-        </el-form-item>
       </el-form>
 
       <div slot="footer">
@@ -674,6 +694,7 @@ export default {
         address: '',
         avatar: '',
         role: '',
+        postion: '',
         department: ''
       },
       userInfo: {
@@ -688,6 +709,7 @@ export default {
         birthday: '',
         address: '',
         role: '',
+        postion: '',
         department: ''
       },
       userUpdate: {
@@ -703,6 +725,7 @@ export default {
         address: '',
         avatar: '',
         role: '',
+        postion: '',
         department: ''
       },
       departmentList: [],
@@ -899,6 +922,7 @@ export default {
         birthday: '',
         address: '',
         avatar: '',
+        postion: '',
         role: ''
       }
     },
@@ -1142,7 +1166,8 @@ export default {
             role: this.userInfo.role,
             department: this.userInfo.department,
             password: this.userInfo.password,
-            matchingPassword: this.userInfo.matchingPassword
+            matchingPassword: this.userInfo.matchingPassword,
+            position: this.userInfo.position
           }
           const headers = {
             'Content-Type': 'application/json',
@@ -1283,7 +1308,8 @@ export default {
             birthday: data.birthday,
             address: data.address,
             role: data.role,
-            department: data.department
+            department: data.department,
+            position: data.position
           }
           paramRegister.avatar = this.url
           paramRegister.birthday = moment(paramRegister.birthday).format(

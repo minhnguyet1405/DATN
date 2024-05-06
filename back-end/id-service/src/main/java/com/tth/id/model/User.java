@@ -62,5 +62,7 @@ public class User implements Serializable {
 
     private String department;
 
+    private String position;
+
     private Integer status; //0: lock, 1: online
 }

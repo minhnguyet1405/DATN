@@ -81,7 +81,7 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/boardroom',
+    path: '/approve',
     component: Layout,
     children: [
       {
@@ -89,7 +89,7 @@ export const constantRoutes = [
         component: () => import('@/views/boardroom/index'),
         name: 'Traffic',
         meta: {
-          title: 'Phòng họp Elcom',
+          title: 'Phê duyệt',
           icon: 'el-icon-s-shop',
           affix: true
         }
@@ -121,22 +121,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/list',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/list/index'),
-        name: 'list',
-        meta: {
-          title: 'Danh sách nhân viên',
-          icon: 'el-icon-s-custom',
-          affix: true
-        }
-      }
-    ]
-  },
-  {
     path: '/checkinout',
     component: Layout,
     hidden: false,
@@ -158,6 +142,15 @@ export const constantRoutes = [
         name: 'adminList',
         meta: { title: 'Quản lý chấm công' },
         roles: ['admin']
+      },
+      {
+        path: 'ai',
+        component: () => import('@/views/AI/checkin'),
+        name: 'ai',
+        meta: {
+          title: 'Chấm công khuân mặt',
+          affix: true
+        }
       }
     ]
   },
@@ -215,7 +208,7 @@ export const asyncRoutes = [
     component: Layout,
     children: [
       {
-        path: 'index',
+        path: 'camera',
         component: () => import('@/views/violation/index'),
         name: 'violation',
         meta: {
@@ -226,6 +219,38 @@ export const asyncRoutes = [
       }
     ]
   },
+  // {
+  //   path: '/AI',
+  //   component: Layout,
+  //   meta: {
+  //     title: 'AI',
+  //     icon: 'el-icon-user-solid',
+  //     roles: ['admin'],
+  //     hidden: true
+  //   },
+  //   children: [
+  //     {
+  //       path: 'camera',
+  //       component: () => import('@/views/AI/camera'),
+  //       name: 'camera',
+  //       meta: {
+  //         title: 'Mở cam',
+  //         icon: 'el-icon-s-custom',
+  //         affix: true
+  //       }
+  //     },
+  //     {
+  //       path: 'checkin',
+  //       component: () => import('@/views/AI/checkin'),
+  //       name: 'checkin',
+  //       meta: {
+  //         title: 'Chấm công',
+  //         icon: 'el-icon-s-custom',
+  //         affix: true
+  //       }
+  //     }
+  //   ]
+  // },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

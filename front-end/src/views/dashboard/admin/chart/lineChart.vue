@@ -4,49 +4,85 @@
 
 <script>
 import Highcharts from 'highcharts'
+import moment from 'moment'
 export default {
+  props: {
+    leaveList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
-      chart: null
+      chart: null,
+      allDays: []
     }
   },
   watch: {
+    leaveList(val) {
+      this.getAllDaysInMonth()
+      if (val) {
+        const newArray = []
+        for (let i = 0; i < this.allDays.length; i++) {
+          for (let j = 0; j < val.length; j++) {
+            if (this.allDays[i] === val[j].day) {
+              newArray.push({ day: this.allDays[i], value: val[j].number })
+            } else {
+              newArray.push({ day: this.allDays[i], value: 0 })
+            }
+          }
+        }
+        this.$nextTick(() => {
+          this.initChart(newArray)
+        })
+      }
+    }
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
+  created() {
+    this.getAllDaysInMonth()
   },
   methods: {
-    initChart() {
+    getAllDaysInMonth() {
+      const firstDayOfMonth = moment().startOf('month')
+      const lastDayOfMonth = moment().endOf('month')
+      const allDays = []
+      const currentDay = firstDayOfMonth
+      while (currentDay.isSameOrBefore(lastDayOfMonth, 'day')) {
+        allDays.push(moment(currentDay.clone()).format('YYYY-MM-DD'))
+        currentDay.add(1, 'day')
+      }
+      this.allDays = allDays
+    },
+    initChart(newArray) {
       Highcharts.chart('lightChart', {
+        chart: {
+          type: 'line'
+        },
         title: {
           text: ''
         },
+        subtitle: {
+          text: ''
+        },
         xAxis: {
-          tickInterval: 1,
-          type: 'logarithmic',
-          accessibility: {
-            rangeDescription: 'Range: 1 to 10'
-          }
+          categories: newArray.map(i => i.day)
         },
-        legend: {
-          enabled: false
-        },
-
         yAxis: {
           title: {
-            text: null
-          },
-          type: 'logarithmic',
-          minorTickInterval: 0.1,
-          accessibility: {
-            rangeDescription: 'Range: 0.1 to 1000'
+            text: 'Số lần'
+          }
+        },
+        plotOptions: {
+          line: {
+            dataLabels: {
+              enabled: false
+            },
+            enableMouseTracking: false
           }
         },
         series: [{
-          data: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
-          pointStart: 1
+          name: 'Số lượt nghỉ',
+          data: newArray.map(i => i.value)
         }]
       })
     }

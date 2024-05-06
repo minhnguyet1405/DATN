@@ -46,7 +46,7 @@ public class DepartmentController extends BaseController {
             } else {
                 pageable = PageRequest.of(0, 20, Sort.by("username"));
             }
-            Page<Department> departments = departmentService.getAll(pageable, search);
+            Page<Department> departments = departmentService.getAll(pageable, search.toUpperCase());
             response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách phòng ban",
                     new MessageContent(HttpStatus.OK.value(), "Lấy danh sách phòng ban", departments.getContent(), departments.getTotalElements()));
         }
@@ -134,6 +134,7 @@ public class DepartmentController extends BaseController {
                         } else {
                             department.setId(departmentExist.getId());
                             department.setModifiedDate(new Date());
+                            department.setIsDeleted(0);
                             departmentService.save(department);
                             response = new ResponseMessage(HttpStatus.OK.value(), "Cập nhật phòng ban thành công",
                                     new MessageContent(HttpStatus.OK.value(), "Cập nhật phòng ban thành công", department));

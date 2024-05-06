@@ -5,17 +5,42 @@
 <script>
 import Highcharts from 'highcharts'
 export default {
+  props: {
+    leaveList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
-      chart: null
+      chart: null,
+      dataChart: [],
+      leaveType: [
+        { value: 'LEAVE', label: 'Nghỉ phép' },
+        { value: 'SICK', label: 'Nghỉ ốm' },
+        { value: 'ABSENT', label: 'Vắng mặt' }
+      ]
     }
   },
   watch: {
+    leaveList(val) {
+      if (val) {
+        this.dataChart = []
+        val.forEach(i => {
+          this.dataChart.push({
+            name: this.leaveType.find(a => a.value === i.type).label,
+            y: i.count
+          })
+        })
+        this.$nextTick(() => {
+          this.initChart()
+        })
+      }
+    }
+  },
+  created() {
   },
   mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
   },
   methods: {
     initChart() {
@@ -27,7 +52,7 @@ export default {
           text: ''
         },
         tooltip: {
-          valueSuffix: '%'
+          valueSuffix: ''
         },
         subtitle: {
           text: ''
@@ -42,7 +67,6 @@ export default {
             }, {
               enabled: true,
               distance: -40,
-              format: '{point.percentage:.1f}%',
               style: {
                 fontSize: '1.2em',
                 textOutline: 'none',
@@ -58,32 +82,9 @@ export default {
         },
         series: [
           {
-            name: 'Percentage',
+            name: 'Số lượng',
             colorByPoint: true,
-            data: [
-              {
-                name: 'Water',
-                y: 55.02
-              },
-              {
-                name: 'Fat',
-                sliced: true,
-                selected: true,
-                y: 26.71
-              },
-              {
-                name: 'Carbohydrates',
-                y: 1.09
-              },
-              {
-                name: 'Protein',
-                y: 15.5
-              },
-              {
-                name: 'Ash',
-                y: 1.68
-              }
-            ]
+            data: this.dataChart
           }
         ]
       })

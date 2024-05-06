@@ -86,6 +86,21 @@ public class RpcServer {
                         else if("/management/leave-by-type".equalsIgnoreCase(requestPath)){
                             response = reportController.getLeaveByType(urlParam, headerParam);
                         }
+                        else if("/management/leave-by-time".equalsIgnoreCase(requestPath)){
+                            response = reportController.getLeaveByTime(urlParam, headerParam);
+                        }
+                        else if("/management/leave-by-department".equalsIgnoreCase(requestPath)){
+                            response = reportController.getLeaveByDepartment(urlParam, headerParam);
+                        }
+                        else if("/management/top-user-late-soon".equalsIgnoreCase(requestPath)){
+                            response = reportController.getUserTimeLateSoon(urlParam, headerParam);
+                        }
+                        else if("/management/frequency-late-soon".equalsIgnoreCase(requestPath)){
+                            response = reportController.getFrequencyLateSoon(urlParam, headerParam);
+                        }
+                        else if("/management/leave-approve".equalsIgnoreCase(requestPath)){
+                            response = leaveController.getListApprove(pathParam, headerParam);
+                        }
                         break;
                     case "POST":
                        if("/management/check-in-out".equalsIgnoreCase(requestPath)){
@@ -93,6 +108,9 @@ public class RpcServer {
                         }
                        else if("/management/leave".equalsIgnoreCase(requestPath)){
                             response = leaveController.createLeave(headerParam, bodyParam);
+                        }
+                       else if("/management/leave-approve".equalsIgnoreCase(requestPath)){
+                            response = leaveController.approveLeave(headerParam, bodyParam);
                         }
                         break;
                     case "PUT":

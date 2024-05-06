@@ -6,6 +6,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class LeaveForTimeDTO {
-    private String week;
+    private String day;
     private long number;
 }
