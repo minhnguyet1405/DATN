@@ -35,4 +35,8 @@ public interface UserService {
     List<User> findByUuidIn(List<String> uuids);
 
     List<User> findByDepartment(String department);
+
+    void save(User user);
+
+    List<User> getUserByManagement(String managementId);
 }

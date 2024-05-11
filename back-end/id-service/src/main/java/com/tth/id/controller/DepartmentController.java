@@ -8,6 +8,7 @@ import com.tth.id.model.Department;
 import com.tth.id.model.User;
 import com.tth.id.model.dto.AuthorizationResponseDTO;
 import com.tth.id.service.DepartmentService;
+import com.tth.id.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,9 @@ import java.util.*;
 public class DepartmentController extends BaseController {
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private UserService userService;
 
     public ResponseMessage getAllDepartment(String urlParam, Map<String, String> headerParam) {
         ResponseMessage response = null;
@@ -46,7 +50,7 @@ public class DepartmentController extends BaseController {
             } else {
                 pageable = PageRequest.of(0, 20, Sort.by("username"));
             }
-            Page<Department> departments = departmentService.getAll(pageable, search.toUpperCase());
+            Page<Department> departments = departmentService.getAll(pageable, search);
             response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách phòng ban",
                     new MessageContent(HttpStatus.OK.value(), "Lấy danh sách phòng ban", departments.getContent(), departments.getTotalElements()));
         }
@@ -87,6 +91,13 @@ public class DepartmentController extends BaseController {
                         department.setId(UUID.randomUUID().toString());
                         department.setCreatedDate(new Date());
                         department.setIsDeleted(0);
+                        if(!StringUtil.isNullOrEmpty(department.getManagerId())){
+                            User user = userService.findByUuid(department.getManagerId());
+                            if(user != null && user.getRole() == 2){
+                                user.setRole(3);
+                                userService.save(user);
+                            }
+                        }
                         departmentService.save(department);
                         response = new ResponseMessage(HttpStatus.OK.value(), "Tạo phòng ban thành công",
                                 new MessageContent(HttpStatus.OK.value(), "Tạo phòng ban thành công", department));

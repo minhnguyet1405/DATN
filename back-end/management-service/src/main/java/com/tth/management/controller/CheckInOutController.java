@@ -42,8 +42,7 @@ public class CheckInOutController extends BaseController {
 
         AuthorizationResponseDTO dto = authenToken(headerParam);
         if (dto == null) {
-            response = new ResponseMessage(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập",
-                    new MessageContent(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập", null));
+            response = new ResponseMessage(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập", new MessageContent(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập", null));
         } else {
             Pageable pageable;
             Map<String, String> params = StringUtil.getUrlParamValues(urlParam);
@@ -53,8 +52,7 @@ public class CheckInOutController extends BaseController {
             Integer month = params.get("month") != null ? Integer.parseInt(params.get("month")) : 1;
             pageable = PageRequest.of(page, size);
             Page<CheckInOut> checkInOuts = checkInOutService.findAllByUserIdAndMonth(pageable, userId, month);
-            response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách dữ liệu chấm công",
-                    new MessageContent(HttpStatus.OK.value(), "Lấy danh sách dữ liệu chấm công", checkInOuts.getContent(), checkInOuts.getTotalElements()));
+            response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách dữ liệu chấm công", new MessageContent(HttpStatus.OK.value(), "Lấy danh sách dữ liệu chấm công", checkInOuts.getContent(), checkInOuts.getTotalElements()));
         }
 
         return response;
@@ -83,7 +81,7 @@ public class CheckInOutController extends BaseController {
                             if (leaveInDay.getEndTime().before(checkInOut.getTimeIn())) {
                                 return getMinuteByDate(checkInOut.getTimeIn()) - getMinuteByDate(leaveInDay.getEndTime());
                             }
-                            if(leaveInDay.getStartTime().after(checkInOut.getTimeIn())) {
+                            if (leaveInDay.getStartTime().after(checkInOut.getTimeIn())) {
                                 return min - checkin * 60;
                             }
                         }
@@ -113,7 +111,7 @@ public class CheckInOutController extends BaseController {
                             if (leaveInDay.getStartTime().after(checkInOut.getTimeOut())) {
                                 return getMinuteByDate(leaveInDay.getStartTime()) - getMinuteByDate(checkInOut.getTimeOut());
                             }
-                            if(leaveInDay.getEndTime().before(checkInOut.getTimeOut())) {
+                            if (leaveInDay.getEndTime().before(checkInOut.getTimeOut())) {
                                 return checkout * 60 - max;
                             }
                         }
@@ -127,22 +125,19 @@ public class CheckInOutController extends BaseController {
         return 0;
     }
 
-    public ResponseMessage createCheckInOut(Map<String, String> headerParam,
-                                            Map<String, Object> bodyParam) throws ParseException {
+    public ResponseMessage createCheckInOut(Map<String, String> headerParam, Map<String, Object> bodyParam) throws ParseException {
         ResponseMessage response = null;
 
         AuthorizationResponseDTO dto = authenToken(headerParam);
 
         if (dto == null) {
-            response = new ResponseMessage(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập",
-                    new MessageContent(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập", null));
+            response = new ResponseMessage(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập", new MessageContent(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập", null));
         } else {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String dateStr = (String) bodyParam.get("time");
             String userId = (String) bodyParam.get("userId");
             if (dateStr == null) {
-                response = new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "Thời gian không được bỏ trống",
-                        new MessageContent(HttpStatus.BAD_REQUEST.value(), "Thời gian không được bỏ trống", null));
+                response = new ResponseMessage(HttpStatus.BAD_REQUEST.value(), "Thời gian không được bỏ trống", new MessageContent(HttpStatus.BAD_REQUEST.value(), "Thời gian không được bỏ trống", null));
             } else {
                 Date date = format.parse(dateStr);
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -165,18 +160,40 @@ public class CheckInOutController extends BaseController {
                     checkInOut.setTimeSoon(calcularTimeSoon(checkInOut, leaveEnd));
                     checkInOut.setTimeLate(calcularTimeLate(checkInOut, leaveStart));
                     checkInOutService.save(checkInOut);
-                    response = new ResponseMessage(HttpStatus.OK.value(), "Check in thành công",
-                            new MessageContent(HttpStatus.OK.value(), "Check in thành công", checkInOut));
+                    response = new ResponseMessage(HttpStatus.OK.value(), "Check in thành công", new MessageContent(HttpStatus.OK.value(), "Check in thành công", checkInOut));
                 } else {
                     checkInOutExist.setTimeOut(date);
                     checkInOutExist.setUpdateTime(new Date());
                     checkInOutExist.setTimeSoon(calcularTimeSoon(checkInOutExist, leaveEnd));
                     checkInOutExist.setTimeLate(calcularTimeLate(checkInOutExist, leaveStart));
                     checkInOutService.save(checkInOutExist);
-                    response = new ResponseMessage(HttpStatus.OK.value(), "Check in thành công",
-                            new MessageContent(HttpStatus.OK.value(), "Check in thành công", checkInOutExist));
+                    response = new ResponseMessage(HttpStatus.OK.value(), "Check in thành công", new MessageContent(HttpStatus.OK.value(), "Check in thành công", checkInOutExist));
                 }
             }
+        }
+        return response;
+    }
+
+    public ResponseMessage checkInOutHandmade(Map<String, String> headerParam, Map<String, Object> bodyParam) throws ParseException {
+        ResponseMessage response = null;
+
+        AuthorizationResponseDTO dto = authenToken(headerParam);
+
+        if (dto == null) {
+            response = new ResponseMessage(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập", new MessageContent(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập", null));
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String date = (String) bodyParam.get("date");
+            String userId = (String) bodyParam.get("userId");
+            String startTime = (String) bodyParam.get("startTime");
+            String endTime = (String) bodyParam.get("endTime");
+            CheckInOut checkInOutExist = checkInOutService.findFirstByUserIdAndDate(userId, date);
+            Date startDate = format.parse(date + " " + startTime + ":00");
+            Date endDate = format.parse(date + " " + endTime + ":00");
+            checkInOutExist.setTimeIn(startDate);
+            checkInOutExist.setTimeOut(endDate);
+            checkInOutService.save(checkInOutExist);
+            response = new ResponseMessage(HttpStatus.OK.value(), "Check in thành công", new MessageContent(HttpStatus.OK.value(), "Check in thành công", checkInOutExist));
         }
         return response;
     }

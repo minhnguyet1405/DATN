@@ -24,6 +24,7 @@ public class AuthorizationResponseDTO {
     private String fullName;
     private Integer gender;
     private String phoneNumber;
+    private String department;
     private Integer role;
 
 
@@ -40,6 +41,7 @@ public class AuthorizationResponseDTO {
         this.gender = userDetails.getUser().getGender();
         this.phoneNumber = userDetails.getUser().getPhoneNumber();
         this.role = userDetails.getUser().getRole();
+        this.department = userDetails.getUser().getDepartment();
     }
 
 }

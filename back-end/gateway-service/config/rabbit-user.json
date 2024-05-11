@@ -53,5 +53,15 @@
     "path": "/user/by-department",
     "method": "GET",
     "rabbit": "rpc"
+  },
+  {
+    "path": "/user/by-manager",
+    "method": "GET",
+    "rabbit": "rpc"
+  },
+  {
+    "path": "/user/manager-by-user",
+    "method": "GET",
+    "rabbit": "rpc"
   }
 ]

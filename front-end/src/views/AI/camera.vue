@@ -85,7 +85,7 @@ export default {
       overflow: hidden;
       border-radius: 4px;
       width: 60rem;
-      height: 30rem;
+      height: 50rem;
     }
   }
   .btn-capture{

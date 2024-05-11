@@ -191,7 +191,7 @@ export default {
         startTime: moment(),
         endTime: moment(),
         reason: null,
-        receive: null
+        receive: this.userList[0].uuid
       }
     },
     getUser() {
@@ -201,12 +201,8 @@ export default {
         Authorization: 'Bearer ' + Cookies.get('access-token')
       }
       axios
-        .get(process.env.VUE_APP_API + 'user', {
-          headers: headers,
-          params: {
-            page: 0,
-            size: 100
-          }
+        .get(process.env.VUE_APP_API + 'user/manager-by-user', {
+          headers: headers
         })
         .then((res) => {
           if (res.data) {

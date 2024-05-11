@@ -124,6 +124,6 @@ public class LeaveServiceImpl implements LeaveService {
 
     @Override
     public List<Leave> getLeaveByReceive(String receive) {
-        return leaveRepository.findByReceiveAndStartTimeAfter(receive, new Date());
+        return leaveRepository.findByReceive(receive);
     }
 }

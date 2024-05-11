@@ -8,6 +8,7 @@ import com.tth.id.model.User;
 import com.tth.id.model.dto.AuthorizationResponseDTO;
 import com.tth.id.model.dto.UserDTO;
 import com.tth.id.model.dto.UserResponse;
+import com.tth.id.service.DepartmentService;
 import com.tth.id.service.UserService;
 import com.tth.id.validation.UserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class UserController extends BaseController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private DepartmentService departmentService;
+
     public ResponseMessage getAllUsers(String requestUrl, String method, String urlParam, Map<String, String> headerParam) {
         ResponseMessage response = null;
 
@@ -53,7 +57,7 @@ public class UserController extends BaseController {
             } else {
                 pageable = PageRequest.of(0, 20, Sort.by("username"));
             }
-            Page<UserResponse> userResponsePage = userService.getAll(pageable, search.toUpperCase());
+            Page<UserResponse> userResponsePage = userService.getAll(pageable, search);
             if(userResponsePage != null){
                 response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách người dùng",
                         new MessageContent(HttpStatus.OK.value(), "Lấy danh sách người dùng", userResponsePage.getContent(), userResponsePage.getTotalElements()));
@@ -98,6 +102,39 @@ public class UserController extends BaseController {
             List<User> userList = userService.findByDepartment(department);
             response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách phòng ban",
                     new MessageContent(HttpStatus.OK.value(), "Lấy danh sách phòng ban", userList));
+        }
+
+        return response;
+    }
+
+    public ResponseMessage getAllUserByManager(Map<String, String> headerParam) {
+        ResponseMessage response = null;
+        AuthorizationResponseDTO dto = getAuthorFromToken(headerParam);
+        if (dto == null) {
+            response = new ResponseMessage(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập",
+                    new MessageContent(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập", null));
+        } else {
+            List<User> userList = userService.getUserByManagement(dto.getUuid());
+            response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách nhân viên",
+                    new MessageContent(HttpStatus.OK.value(), "Lấy danh sách nhân viên", userList));
+        }
+
+        return response;
+    }
+
+    public ResponseMessage getManagerByUser(Map<String, String> headerParam) {
+        ResponseMessage response = null;
+        AuthorizationResponseDTO dto = getAuthorFromToken(headerParam);
+        if (dto == null) {
+            response = new ResponseMessage(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập",
+                    new MessageContent(HttpStatus.UNAUTHORIZED.value(), "Bạn chưa đăng nhập", null));
+        } else {
+            Department department = departmentService.findById(dto.getDepartment());
+            List<User> userList = new ArrayList<>();
+            User management = userService.findByUuid(department.getManagerId());
+            userList.add(management);
+            response = new ResponseMessage(HttpStatus.OK.value(), "Lấy danh sách quản lý",
+                    new MessageContent(HttpStatus.OK.value(), "Lấy danh sách quản lý", userList));
         }
 
         return response;

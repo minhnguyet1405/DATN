@@ -50,6 +50,8 @@
           <el-table-column prop="code" label="Mã phòng ban" />
           <el-table-column prop="site" label="Vị trí" />
           <el-table-column prop="phoneNumber" label="Số điện thoại" />
+          <el-table-column prop="managerId" label="Trưởng phòng">
+            <template slot-scope="scope">{{ getUserNameById(scope.row.managerId) }}</template></el-table-column>
         </el-table>
         <el-pagination
           :current-page.sync="queryPage.page"
@@ -175,6 +177,24 @@
               <el-input v-model="departmentInfo.site" placeholder="Nhập vị trí" />
             </el-form-item>
           </div>
+          <el-form-item
+            label="Trưởng phòng"
+            prop="managerId"
+          >
+            <el-select
+              v-model="departmentInfo.managerId"
+              style="width: 100%"
+              filterable
+              placeholder="Vui lòng chọn"
+            >
+              <el-option
+                v-for="manager in userList"
+                :key="manager.uuid"
+                :label="manager.fullName"
+                :value="manager.uuid"
+              />
+            </el-select>
+          </el-form-item>
         </div>
       </el-form>
 
@@ -251,6 +271,24 @@
               <el-input v-model="departmentInfo.site" placeholder="Nhập vị trí" />
             </el-form-item>
           </div>
+          <el-form-item
+            label="Trưởng phòng"
+            prop="managerId"
+          >
+            <el-select
+              v-model="departmentInfo.managerId"
+              style="width: 100%"
+              filterable
+              placeholder="Vui lòng chọn"
+            >
+              <el-option
+                v-for="manager in userList"
+                :key="manager.uuid"
+                :label="manager.fullName"
+                :value="manager.uuid"
+              />
+            </el-select>
+          </el-form-item>
         </div>
       </el-form>
 
@@ -305,6 +343,7 @@ export default {
       loadingVehicle: false,
       departmentList: [],
       multiSelected: [],
+      userList: [],
       allSelected: false,
       loading_delete_all: false,
       loading_add: false,
@@ -321,21 +360,24 @@ export default {
         name: '',
         code: '',
         site: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        managerId: ''
       },
       departmentInfo: {
         id: '',
         name: '',
         code: '',
         site: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        managerId: ''
       },
       userUpdate: {
         id: '',
         name: '',
         code: '',
         site: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        managerId: ''
       },
       departmentDetail: {},
       imagecropperKey: 0,
@@ -447,6 +489,7 @@ export default {
   },
   created() {
     this.getDepartment()
+    this.getUser()
   },
   methods: {
     closeDialog(formName) {
@@ -457,19 +500,45 @@ export default {
     resetDialog() {
       this.url = null
       this.departmentInfo = {
-        uuid: '',
-        email: '',
+        id: '',
+        name: '',
+        code: '',
+        site: '',
         phoneNumber: '',
-        username: '',
-        fullName: '',
-        matchingPassword: '',
-        password: '',
-        gender: '',
-        birthday: '',
-        address: '',
-        avatar: '',
-        role: ''
+        managerId: ''
       }
+    },
+
+    getUserNameById(uuid) {
+      const user = this.userList.find(i => i.uuid === uuid)
+      if (user) return user.fullName
+      return ''
+    },
+    getUser() {
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'user', {
+          headers: headers,
+          params: {
+            page: 0,
+            size: 100
+          }
+        })
+        .then((res) => {
+          if (res.data) {
+            this.userList = res.data.data
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
     },
 
     toggleAll(checked) {
@@ -674,7 +743,8 @@ export default {
             name: this.departmentInfo.name,
             phoneNumber: this.departmentInfo.phoneNumber.trim(),
             code: this.departmentInfo.code,
-            site: this.departmentInfo.site
+            site: this.departmentInfo.site,
+            managerId: this.departmentInfo.managerId
           }
           const headers = {
             'Content-Type': 'application/json',
@@ -806,7 +876,8 @@ export default {
             name: data.name,
             code: data.code,
             site: data.site,
-            phoneNumber: data.phoneNumber
+            phoneNumber: data.phoneNumber,
+            managerId: this.departmentInfo.managerId
           }
           this.loading_add = true
           axios

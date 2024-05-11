@@ -72,6 +72,10 @@ public class RpcServer {
                             response = departmentController.getAllDepartment(urlParam, headerParam);
                         }else if("/user/by-department".equalsIgnoreCase(requestPath)) {
                             response = userController.getAllUserByDepartment(urlParam, headerParam);
+                        }else if("/user/by-manager".equalsIgnoreCase(requestPath)) {
+                            response = userController.getAllUserByManager(headerParam);
+                        }else if("/user/manager-by-user".equalsIgnoreCase(requestPath)) {
+                            response = userController.getManagerByUser(headerParam);
                         }
                         break;
                     case "POST":

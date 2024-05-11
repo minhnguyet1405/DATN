@@ -79,5 +79,9 @@
     "path": "/management/leave-approve",
     "method": "POST",
     "rabbit": "rpc"
+  },{
+    "path": "/management/check-in-hand",
+    "method": "POST",
+    "rabbit": "rpc"
   }
 ]

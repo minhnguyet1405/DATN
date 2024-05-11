@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,7 +35,7 @@ public class UserServiceImpl implements UserService {
         if(StringUtil.isNullOrEmpty(search)){
             userList = userRepository.findAllByStatus(pageable, 1);
         } else {
-            userList = userRepository.findByKeyword(search, search, search, 1, pageable);
+            userList = userRepository.findByKeyword(search.toUpperCase(), search.toUpperCase(), search.toUpperCase(), 1, pageable);
         }
         return transform(userList);
     }
@@ -197,5 +194,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findByDepartment(String department) {
         return userRepository.findByDepartmentAndStatus(department, 1);
+    }
+
+    @Override
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    public List<User> getUserByManagement(String managementId) {
+        List<Department> departments = departmentRepository.findByManagerId(managementId);
+        List<User> userList = new ArrayList<>();
+        for (Department department : departments) {
+            List<User> users = userRepository.findByDepartmentAndStatus(department.getId(), 1);
+            userList.addAll(users);
+        }
+        return userList;
     }
 }

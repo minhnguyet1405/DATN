@@ -16,4 +16,5 @@ public interface DepartmentService {
     Department findByPhone(String phone);
     Department findById(String id);
     List<Department> findByIds(List<String> ids);
+    List<Department> findByManager(String manager);
 }

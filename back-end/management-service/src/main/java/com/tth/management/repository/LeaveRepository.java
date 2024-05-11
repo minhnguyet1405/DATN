@@ -32,7 +32,7 @@ public interface LeaveRepository extends JpaRepository<Leave, String> {
     @Query("SELECT count (c.id) from Leave c where (c.endTime >= :startTime and c.endTime <= :endTime) or (c.startTime >= :startTime and c.startTime <= :endTime) or (c.startTime <= :startTime and c.endTime >= :endTime)")
     long countLeavePlan(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
-    List<Leave> findByReceiveAndStartTimeAfter(String receive, Date date);
+    List<Leave> findByReceive(String receive);
 
     @Query("SELECT c from Leave c where c.createdBy = :userId and (c.startTime <= :date and c.endTime >= :date)")
     List<Leave> findLeaveInDay(@Param("userId") String userId, @Param("date") Date date);

@@ -112,6 +112,9 @@ public class RpcServer {
                        else if("/management/leave-approve".equalsIgnoreCase(requestPath)){
                             response = leaveController.approveLeave(headerParam, bodyParam);
                         }
+                       else if("/management/check-in-hand".equalsIgnoreCase(requestPath)){
+                            response = checkInOutController.checkInOutHandmade(headerParam, bodyParam);
+                        }
                         break;
                     case "PUT":
                         if("/management/leave".equalsIgnoreCase(requestPath)){

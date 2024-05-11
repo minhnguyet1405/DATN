@@ -23,6 +23,8 @@ public interface DepartmentRepository extends JpaRepository<Department, String> 
 
     List<Department> findByIdIn(List<String> ids);
 
+    List<Department> findByManagerId(String managementId);
+
     @Query("SELECT d FROM Department d WHERE (upper(d.name) like %:name% OR upper(d.code) like %:code% ) AND d.isDeleted = :isDeleted")
     Page<Department> findByKeyword(@Param("name") String name, @Param("code") String code,
                              @Param("isDeleted") Integer isDeleted, Pageable pageable);

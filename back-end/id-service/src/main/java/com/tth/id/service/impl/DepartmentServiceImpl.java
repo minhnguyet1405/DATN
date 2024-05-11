@@ -21,7 +21,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         if(StringUtil.isNullOrEmpty(search)){
             return departmentRepository.findAllByIsDeleted(pageable, 0);
         }else{
-            return departmentRepository.findByKeyword(search,search,0, pageable);
+            return departmentRepository.findByKeyword(search.toUpperCase(),search.toUpperCase(),0, pageable);
         }
     }
 
@@ -58,5 +58,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<Department> findByIds(List<String> ids) {
         return departmentRepository.findByIdIn(ids);
+    }
+
+    @Override
+    public List<Department> findByManager(String manager) {
+        return departmentRepository.findByManagerId(manager);
     }
 }

@@ -1164,7 +1164,7 @@ export default {
             birthday: this.userInfo.birthday,
             address: this.userInfo.address.trim(),
             role: this.userInfo.role,
-            department: this.userInfo.department,
+            department: this.userInfo.department.id,
             password: this.userInfo.password,
             matchingPassword: this.userInfo.matchingPassword,
             position: this.userInfo.position
@@ -1308,7 +1308,7 @@ export default {
             birthday: data.birthday,
             address: data.address,
             role: data.role,
-            department: data.department,
+            department: data.department.id,
             position: data.position
           }
           paramRegister.avatar = this.url

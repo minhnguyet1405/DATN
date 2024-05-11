@@ -1,13 +1,12 @@
 <template>
   <div class="app-container">
     <div class="check-in-out-bock">
-      <div>
+      <div class="filter">
         <el-date-picker
           v-model="filter.year"
           style="width: 100px"
           type="year"
           placeholder="Năm"
-          @change="getList"
         />
         <el-date-picker
           v-model="filter.month"
@@ -17,19 +16,33 @@
           popper-class="custom-month"
           type="month"
           placeholder="Tháng"
-          @change="getList"
         />
+        <el-select
+          v-model="filter.userId"
+          style="width: 300px"
+          filterable
+          placeholder="Nhân viên"
+          @change="handleSelectUser"
+        >
+          <el-option
+            v-for="department in userList"
+            :key="department.uuid"
+            :label="department.fullName"
+            :value="department.uuid"
+          />
+        </el-select>
+        <div>
+          <el-button
+            class="btn-check"
+            type="primary"
+            :loading="loading"
+            :disabled="disableBtn"
+            @click="getList()"
+          >
+            Hiển thị dữ liệu
+          </el-button>
+        </div>
       </div>
-      <!-- <div>
-        <el-button
-          class="btn-check"
-          type="primary"
-          :loading="loading_checkin"
-          @click="handleCheckIn()"
-        ><i class="el-icon-alarm-clock" />
-          Chấm công
-        </el-button>
-      </div> -->
     </div>
     <div class="table-bock">
       <el-table
@@ -38,26 +51,19 @@
         :data="checkinList"
         style="width: 100%"
       >
-        <el-table-column label="Ngày" width="150">
+        <el-table-column label="Ngày">
           <template slot-scope="scope"><span>{{ formatDate(scope.row.date) }}</span></template>
         </el-table-column>
-        <el-table-column label="">
-          <template slot-scope="scope"><span>{{ getDay(scope.row.date) }}</span></template>
-        </el-table-column>
         <el-table-column label="In">
-          <template slot-scope="scope"><span>{{ scope.row.timeIn ? formatTime(scope.row.timeIn) :'--' }}</span></template>
+          <template slot-scope="scope"><span>{{ formatTime(scope.row.timeIn) }}</span></template>
         </el-table-column>
         <el-table-column label="Out">
           <template slot-scope="scope"><span>{{ scope.row.timeOut ? formatTime(scope.row.timeOut) :'--' }}</span></template>
         </el-table-column>
-        <el-table-column label="Số phút đi muộn">
-          <template slot-scope="scope"><span>{{ !isWeekend(scope.row.date) ? scope.row.timeLate : '--' }}</span></template>
-        </el-table-column>
-        <el-table-column label="Số phút về sớm">
-          <template slot-scope="scope"><span>{{ !isWeekend(scope.row.date) ? scope.row.timeSoon : '--' }}</span></template>
-        </el-table-column>
-        <el-table-column label="Ghi chú">
-          <template slot-scope="scope"><span>{{ scope.row.note }}</span></template>
+        <el-table-column label="Chấm công">
+          <template slot-scope="scope">
+            <el-button type="danger" @click="openCheckin(scope.row)">Chấm công</el-button>
+          </template>
         </el-table-column>
       </el-table>
       <el-pagination
@@ -69,6 +75,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       /></div>
+    <CheckinHand v-if="dialogVisible" :dialog-visible="dialogVisible" :data-check-in="dataCheckIn" @close="handleClose" @success="handleSuccess" />
   </div>
 </template>
 <script>
@@ -76,21 +83,30 @@ import axios from 'axios'
 import { inject } from 'vue'
 import Cookies from 'js-cookie'
 import moment from 'moment'
+import CheckinHand from './components/formCheckIn.vue'
 export default {
   name: 'Accounts',
+  components: { CheckinHand },
   setup() {
     const appName = inject('appName')
     console.log(appName)
   },
   data() {
     return {
+      dataCheckIn: null,
+      dialogVisible: false,
+      disableBtn: true,
       loading: false,
       loading_checkin: false,
       filter: {
+        department: null,
+        userId: null,
         year: moment().year().toString(),
         month: (moment().month() + 1).toString()
       },
       checkinList: [],
+      departmentList: [],
+      userList: [],
       queryPage: {
         page: 0,
         size: 10,
@@ -99,10 +115,19 @@ export default {
     }
   },
   created() {
-    console.log('aaaaaa', Cookies.getJSON('userInfo'))
-    this.getList()
+    this.getDepartment()
+    this.getUserByDepartment()
   },
   methods: {
+    handleClose() {
+      this.dataCheckIn = null
+      this.dialogVisible = false
+    },
+    handleSuccess() {
+      this.dataCheckIn = null
+      this.dialogVisible = false
+      this.getList()
+    },
     getList() {
       this.loading = true
       const headers = {
@@ -115,7 +140,7 @@ export default {
           params: {
             page: this.queryPage.page > 0 ? this.queryPage.page - 1 : 0,
             size: this.queryPage.size,
-            userId: Cookies.getJSON('userInfo').uuid,
+            userId: this.filter.userId,
             month: (moment(this.filter.month).month() + 1).toString(),
             year: (moment(this.filter.year).year()).toString()
           }
@@ -123,7 +148,7 @@ export default {
         .then((res) => {
           if (res.data) {
             this.checkinList = res.data.data
-            this.queryPage.total = res.total
+            this.queryPage.total = res.data.total
             this.loading = false
           }
         })
@@ -136,39 +161,62 @@ export default {
           })
         })
     },
-    handleCheckIn() {
-      const params = {
-        time: moment().format('YYYY-MM-DD HH:mm:ss'),
-        userId: Cookies.getJSON('userInfo').uuid
-      }
+    getDepartment() {
+      this.loading = true
       const headers = {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
         Authorization: 'Bearer ' + Cookies.get('access-token')
       }
-      this.loading_checkin = true
       axios
-        .post(
-          process.env.VUE_APP_API + 'management/check-in-out',
-          params,
-          { headers }
-        )
-        .then((response) => {
-          if (
-            response.status === 200 ||
-                response.status === 201
-          ) {
-            this.getList()
-            this.$message.success('Chấm công thành công')
+        .get(process.env.VUE_APP_API + 'user/department', {
+          headers: headers,
+          params: {
+            page: this.queryPage.page > 0 ? this.queryPage.page - 1 : 0,
+            size: this.queryPage.size,
+            search: this.queryPage.search
           }
-          this.loading_checkin = false
+        })
+        .then((res) => {
+          if (res.data) {
+            this.departmentList = res.data.data
+            this.loading = false
+          }
         })
         .catch((err) => {
-          this.loading_checkin = false
+          console.log(err)
+          this.loading = false
           this.$message({
-            message: err.response.message,
+            message: err.response.data.message,
             type: 'error'
           })
         })
+    },
+    getUserByDepartment() {
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + Cookies.get('access-token')
+      }
+      axios
+        .get(process.env.VUE_APP_API + 'user/by-manager', {
+          headers: headers
+        })
+        .then((res) => {
+          if (res.data) {
+            this.userList = res.data.data
+            console.log('this.userList', this.userList)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$message({
+            message: err.response.data.message,
+            type: 'error'
+          })
+        })
+    },
+    openCheckin(row) {
+      this.dataCheckIn = row
+      this.dialogVisible = true
     },
     handleSizeChange(size) {
       this.queryPage.size = size
@@ -184,22 +232,12 @@ export default {
     formatTime(val) {
       return val ? moment(val).format('HH:mm') : ''
     },
-    getDay(date) {
-      return this.transLate(moment(date).format('dddd'))
-    },
-    isWeekend(date) {
-      const dateToCheck = moment(date)
-      const isWeekend = dateToCheck.isoWeekday() === 6 || dateToCheck.isoWeekday() === 7
-      if (isWeekend) return true
-    },
-    transLate(day) {
-      if (day === 'Monday') return 'Thứ 2'
-      if (day === 'Tuesday') return 'Thứ 3'
-      if (day === 'Wednesday') return 'Thứ 4'
-      if (day === 'Thursday') return 'Thứ 5'
-      if (day === 'Friday') return 'Thứ 6'
-      if (day === 'Saturday') return 'Thứ 7'
-      if (day === 'Sunday') return 'Chủ nhật'
+    handleSelectUser() {
+      if (this.filter.userId) {
+        this.disableBtn = false
+      } else {
+        this.disableBtn = true
+      }
     }
   }
 }
@@ -211,7 +249,11 @@ export default {
   align-items: center;
 }
 .btn-check {
-  background-color: rgb(138, 63, 121);
-  border-color: rgb(138, 63, 121);
+  background-color: rgb(67, 35, 126);
+  border-color: rgb(67, 35, 126);
+}
+.filter {
+  display: flex;
+  gap: 15px;
 }
 </style>

@@ -27,14 +27,14 @@ public interface CheckInOutRepository extends JpaRepository<CheckInOut, String> 
     @Query("SELECT count (c.id) from CheckInOut c where c.updateTime >= :startTime and c.updateTime <= :endTime and (c.timeSoon is not null and c.timeSoon > 0)  and c.isWeekend = false")
     long countTimeSoon(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
-    @Query("SELECT count (c.id) from CheckInOut c where c.userId in :userIds and c.updateTime >= :startTime and c.updateTime <= :endTime and c.timeIn is null and c.timeOut is null and c.isWeekend = false")
+    @Query("SELECT count (c.id) from CheckInOut c where c.userId in :userIds and c.updateTime >= :startTime and c.updateTime <= :endTime and (c.timeIn is null or c.timeOut is null) and c.isWeekend = false")
     long sumCheckNull(@Param("userIds") List<String> userIds, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
-    @Query("SELECT count (c.id) from CheckInOut c where c.updateTime >= :startTime and c.updateTime <= :endTime and c.timeIn is null and c.timeOut is null and c.isWeekend = false")
+    @Query("SELECT count (c.id) from CheckInOut c where c.updateTime >= :startTime and c.updateTime <= :endTime and (c.timeIn is null or c.timeOut is null) and c.isWeekend = false")
     long sumCheckNull(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
-    @Query("SELECT c from CheckInOut c where c.userId in :userIds and c.updateTime >= :startTime and c.updateTime <= :endTime and c.timeIn is null and c.timeOut is null and c.isWeekend = false")
+    @Query("SELECT c from CheckInOut c where c.userId in :userIds and c.updateTime >= :startTime and c.updateTime <= :endTime and (c.timeIn is null or c.timeOut is null) and c.isWeekend = false")
     List<CheckInOut> getLeaveReal(@Param("userIds") List<String> userIds, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
-    @Query("SELECT c from CheckInOut c where c.updateTime >= :startTime and c.updateTime <= :endTime and c.timeIn is null and c.timeOut is null and c.isWeekend = false")
+    @Query("SELECT c from CheckInOut c where c.updateTime >= :startTime and c.updateTime <= :endTime and (c.timeIn is null or c.timeOut is null) and c.isWeekend = false")
     List<CheckInOut> getLeaveReal(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
 
